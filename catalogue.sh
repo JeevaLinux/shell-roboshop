@@ -7,7 +7,7 @@ Y="\e[33m"
 N="\e[@m"
 
 LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_NAME=$( echo $@ | cut -d "." -f1)
+SCRIPT_NAME=$( echo $0 | cut -d "." -f1)
 SCRIPT_DIR=$PWD
 MONGODB_HOST=mongodb.daws86.uno
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" 
