@@ -47,7 +47,7 @@ curl -o /tmp/catalogue.zip https://roboshop-artifacts.s3.amazonaws.com/catalogue
 VALIDATE $? "downloading catalogue application"
 cd /app
 VALIDATE $? "changing to app directory"
-unzip /tmp/catalogue.xip &>>$LOG_FILE
+unzip /tmp/catalogue.zip &>>$LOG_FILE
 VALIDATE $? "unzip the catalogue"
 npm install &>>$LOG_FILE
 VALIDATE $? "Install dependencies"
@@ -58,9 +58,9 @@ systemctl enable catalogue &>>$LOG_FILE
 VALIDATE $? "Enable catalogue"
 
 cp $SCRIPT_DIR/mongo.repo /etcyum.repos.d/mongo.repo
-VALIDATE $? "COpy mongo repo"
+VALIDATE $? "Copy mongo repo"
 dnf install mongodb-mongosh -y &>>$LOG_FILE
-VALIDATE $? "Install MOngoDB client"
+VALIDATE $? "Install MongoDB client"
 mongosh --host $MONGODB_HOST </app/db/master-data.js &>>$LOG_FILE
 VALIDATE $? "Load catalogue products"
 systemctl restart catalogue
