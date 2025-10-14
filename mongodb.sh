@@ -4,7 +4,7 @@ USERID=$(id -u)
 R="\e[31m"
 G="\e[32m"
 Y="\e[33m"
-N="\e[@m"
+N="\e[0m"
 
 LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1)
@@ -41,3 +41,8 @@ VALIDATE $? "Enable MongoDB"
 systemctl start mongod
 VALIDATE $? "Start MongoDB"
 
+sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+VALIDATE $? "Allowing remite connections to MongoDB"
+
+systemctl retsrat mongod
+VALIDATE $? "Restarted MongoDB"
