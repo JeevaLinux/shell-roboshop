@@ -10,8 +10,8 @@ LOGS_FOLDER="/var/log/shell-roboshop"
 SCRIPT_NAME=$( echo $0 | cut -d "." -f1)
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" 
 START_TIME=$(date +%s)
-
 mkdir -p $LOGS_FOLDER
+SCRIPT_DIR=$(PWD)
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE
 
 if [ $USERID -ne 0 ]; then 
@@ -28,15 +28,18 @@ VALIDATE(){
     fi
 }
 
-dnf install mysql-server -y
-VALIDATE $? "Installing MYSQL server"
-systemctl enable mysqld
-VALIDATE $? "Enabling MYSQL server"
-systemctl start mysqld
-VALIDATE $? "Starting MYSQL server"
+cp $SCRIPT_DIR/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo
+VALIDATE $? "Adding RabbitMQ repo"
+dnf install rebbitmq-server -y &>>$LOG_FILE
+VALIDATE $? "Installing Rabbitmq server"
+systemctl enable rebbitmq-server &>>$LOG_FILE
+VALIDATE $? "Enabling RabbitMQ server"
+systemctl start rebbitmq-server &>>$LOG_FILE
+VALIDATE $? "Starting RabbitMQ"
 
-mysql_secure_installation --set-root-pass RoboShop@1
-VALIDATE $? "Setting up root password"
+rabbitmqctl add_user roboshop roboshop123 &>>$LOG_FILE
+rabbitmq set_permissions -p / roboshop ".*" ".*" ".*" &>>$LOG_FILE
+VALIDATE $? "Setting up Permissions"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=S(( $END_TIME - $START_TIME))
