@@ -11,7 +11,7 @@ SCRIPT_NAME=$( echo $0 | cut -d "." -f1)
 LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" 
 START_TIME=$(date +%s)
 mkdir -p $LOGS_FOLDER
-SCRIPT_DIR=$(PWD)
+SCRIPT_DIR=$PWD
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE
 
 if [ $USERID -ne 0 ]; then 
@@ -28,7 +28,7 @@ VALIDATE(){
     fi
 }
 
-cp $SCRIPT_DIR/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo
+cp $SCRIPT_DIR/rabbitmq.repo /etc/yum.repos.d/rabbitmq.repo &>>$LOG_FILE
 VALIDATE $? "Adding RabbitMQ repo"
 dnf install rebbitmq-server -y &>>$LOG_FILE
 VALIDATE $? "Installing Rabbitmq server"
