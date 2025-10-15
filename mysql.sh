@@ -29,10 +29,14 @@ VALIDATE(){
 }
 
 dnf install mysql-server -y
+VALIDATE $? "Installing MYSQL server"
 systemctl enable mysqld
+VALIDATE $? "Enabling MYSQL server"
 systemctl start mysqld
-mysql_secure_installation --set-root-pass RoboShop@1
+VALIDATE $? "Starting MYSQL server"
 
+mysql_secure_installation --set-root-pass RoboShop@1
+VALIDATE $? "Setting up root password"
 
 END_TIME=$(date +%s)
 TOTAL_TIME=S(( $END_TIME - $START_TIME))
