@@ -75,19 +75,3 @@ else
 fi    
 
 systemctl restart shipping
-
-
-
-
-
-
-
-
-
-
-systemctl daemon-reload
-systemctl enable user &>>$LOG_FILE
-VALIDATE $? "Enable user"
-
-systemctl restart user
-VALIDATE $? "Restarted user"
