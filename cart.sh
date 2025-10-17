@@ -7,20 +7,20 @@ Y="\e[33m"
 N="\e[0m"
 
 LOGS_FOLDER="/var/log/shell-roboshop"
-SCRIPT_NAME=$( echo $0 | cut -d "." -f1)
+SCRIPT_NAME=$( echo $0 | cut -d "." -f1 )
 SCRIPT_DIR=$PWD
-MONGODB_HOST=mongodb.daws86.uno
-LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" 
+MONGODB_HOST=mongodb.daws86s.fun
+LOG_FILE="$LOGS_FOLDER/$SCRIPT_NAME.log" # /var/log/shell-script/16-logs.log
 
 mkdir -p $LOGS_FOLDER
 echo "Script started executed at: $(date)" | tee -a $LOG_FILE
 
-if [ $USERID -ne 0 ]; then 
+if [ $USERID -ne 0 ]; then
     echo "ERROR:: Please run this script with root privelege"
-    exit 1
+    exit 1 # failure is other than 0
 fi
 
-VALIDATE(){
+VALIDATE(){ # functions receive inputs through args just like shell script args
     if [ $1 -ne 0 ]; then
         echo -e "$2 ... $R FAILURE $N" | tee -a $LOG_FILE
         exit 1
@@ -29,13 +29,13 @@ VALIDATE(){
     fi
 }
 
-### NodeJs ##
+##### NodeJS ####
 dnf module disable nodejs -y &>>$LOG_FILE
-VALIDATE $? "Disabling Nodejs"
-dnf module enable nodejs:20 -y &>>$LOG_FILE
-VALIDATE $? "ENabling NodeJs 20"
+VALIDATE $? "Disabling NodeJS"
+dnf module enable nodejs:20 -y  &>>$LOG_FILE
+VALIDATE $? "Enabling NodeJS 20"
 dnf install nodejs -y &>>$LOG_FILE
-VALIDATE $? "Installing Nodejs"
+VALIDATE $? "Installing NodeJS"
 
 id roboshop &>>$LOG_FILE
 if [ $? -ne 0 ]; then
@@ -45,23 +45,27 @@ else
     echo -e "User already exist ... $Y SKIPPING $N"
 fi
 
-
 mkdir -p /app
-VALIDATE $? "creating app directory"
+VALIDATE $? "Creating app directory"
+
 curl -o /tmp/cart.zip https://roboshop-artifacts.s3.amazonaws.com/cart-v3.zip &>>$LOG_FILE
-VALIDATE $? "downloading cart application"
-cd /app
-VALIDATE $? "changing to app directory"
+VALIDATE $? "Downloading cart application"
+
+cd /app 
+VALIDATE $? "Changing to app directory"
 
 rm -rf /app/*
 VALIDATE $? "Removing existing code"
 
 unzip /tmp/cart.zip &>>$LOG_FILE
-VALIDATE $? "unzip the cart"
+VALIDATE $? "unzip cart"
+
 npm install &>>$LOG_FILE
 VALIDATE $? "Install dependencies"
+
 cp $SCRIPT_DIR/cart.service /etc/systemd/system/cart.service
 VALIDATE $? "Copy systemctl service"
+
 systemctl daemon-reload
 systemctl enable cart &>>$LOG_FILE
 VALIDATE $? "Enable cart"
